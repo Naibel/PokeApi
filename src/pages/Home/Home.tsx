@@ -1,7 +1,12 @@
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
-import { Card } from "../../components/Card/Card";
-import styles from "./Home.module.css";
+import { useCallback, useEffect, useState } from "react";
 import { create } from "zustand";
+
+import { PokeCard } from "../../components/Card/PokeCard";
+import Header from "../../components/Header/Header";
+import SearchBar from "../../components/SearchBar/SearchBar";
+
+import styles from "./Home.module.css";
+import { Flex, Grid, Heading } from "@chakra-ui/react";
 
 interface Pokemon {
   name: string;
@@ -20,7 +25,7 @@ const usePokemonStore = create<State>((set) => ({
 
 export const Home = () => {
   const { pokemons, addPokemons } = usePokemonStore();
-  const [searchBar, setSearchBar] = useState<string>("");
+  const [searchResult, setSearchResult] = useState<string>("");
 
   const getPokeData = useCallback(async () => {
     const response = await fetch(
@@ -36,30 +41,34 @@ export const Home = () => {
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>Pokedex</h1>
-        <div>
-          <span>Recherche : </span>
-          <input
-            type="text"
-            value={searchBar}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              setSearchBar(event.target.value);
-            }}
-          />
-        </div>
-      </header>
-      <div className={styles.cards}>
-        {pokemons
-          ?.filter((pokemon: Pokemon) => pokemon?.name.includes(searchBar))
-          .map((pokemon: Pokemon) => (
-            <Card
-              key={`card_${pokemons.indexOf(pokemon)}`}
-              name={pokemon.name}
-              index={pokemons.indexOf(pokemon)}
-            />
-          ))}
-      </div>
+      <Header />
+      <SearchBar
+        searchResult={searchResult}
+        onSearchChange={(value: string) => setSearchResult(value)}
+      />
+      <Flex direction="column" p="1rem">
+        <Heading textAlign="center">Liste des pokémons</Heading>
+        <Grid
+          templateColumns={[
+            "repeat(1, 1fr)",
+            "repeat(1, 1fr)",
+            "repeat(1, 1fr)",
+            "repeat(3, 1fr)",
+          ]}
+          gap="6"
+          p="2rem"
+        >
+          {pokemons
+            ?.filter((pokemon: Pokemon) => pokemon?.name.includes(searchResult))
+            .map((pokemon: Pokemon) => (
+              <PokeCard
+                key={`card_${pokemons.indexOf(pokemon)}`}
+                name={pokemon.name}
+                index={pokemons.indexOf(pokemon)}
+              />
+            ))}
+        </Grid>
+      </Flex>
     </div>
   );
 };

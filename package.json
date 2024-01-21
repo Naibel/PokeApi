@@ -1,5 +1,5 @@
 {
-  "name": "test-pokeapi-vite-pnpm",
+  "name": "poke-api",
   "private": true,
   "version": "0.0.0",
   "type": "module",
